@@ -98,7 +98,7 @@ export default {
       } else {
 
 
-        console.log(this.ruleForm);
+        // console.log(this.ruleForm);
 
         localStorage.setItem('name', this.ruleForm.username);
         localStorage.setItem('password', this.ruleForm.checkPass);
@@ -147,7 +147,7 @@ export default {
 .form {
   color: white;
   margin-left: 20%;
-  margin-top: 60px;
+  margin-top: 50px;
   font-size: 20px;
   text-align: left;
 }
@@ -159,25 +159,7 @@ label {
   text-align: right;
 }
 
-input,
-textarea {
-  margin-left: 10px;
-  padding: 4px;
-  border: solid 1px #1D8CE0;
-  outline: 0;
-  font: normal 13px/100% Verdana, Tahoma, sans-serif;
-  width: 200px;
-  height: 20px;
-  background: #f1f1f190;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 8px;
-}
 
-input:hover,
-textarea:hover,
-input:focus,
-textarea:focus {
-  border-color: #58B7FF;
-}
 
 button {
   position: relative;
