@@ -7,6 +7,13 @@ import Antd from 'ant-design-vue' ; //引入组件
 import 'element-ui/lib/theme-chalk/index.css'; //element css元素
 import 'ant-design-vue/dist/antd.css';
 import axios from 'axios';
+import request from './utils/request';
+// import request from "@/utils/request";
+//  request.get("http://localhost:8080/user/findAll").then( res=> {
+//       console.log(res);
+//     })
+Vue.prototype.request = request  //全局注册request，其他文件可通过this.request使用分装好的request实例
+
 // // 计算响应式
 // import 'lib-flexible-computer'
 // import request from './api';

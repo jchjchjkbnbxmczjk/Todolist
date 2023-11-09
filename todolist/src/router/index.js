@@ -8,7 +8,7 @@ import Login from '@/views/Login.vue'
 import Register from '@/views/Register.vue';
 
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 
 const routes = [
@@ -74,7 +74,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'history',   
   base: process.env.BASE_URL,
   routes
 })
@@ -82,7 +82,7 @@ const router = new VueRouter({
 // 添加路由导航守卫
 // 添加路由导航守卫
 // 用来对访问的路由进行权限控制
-// 除了login这个路由其他的路由都要进行了登录之后才能访问
+// 除了login和register这个路由其他的路由都要进行了登录之后才能访问
 router.beforeEach((to, from, next) => {  
       //前置导航守卫函数
   console.log(to)
@@ -103,7 +103,7 @@ router.beforeEach((to, from, next) => {
   // 这里应该要判断是否登录好，到时候看登录有token就代表登录好了,相当于没有token就必须跳转到登录
   if(sessionStorage.getItem('token')){
     // 如果有token则是登录了 想去哪里去哪里
-    next()
+    next()   //跳到下一个路由
   }else if((to.name=='Login'||to.name=='Register')&&!window.sessionStorage.getItem('token')){
     // 如果没token但是这两个页面可以随时进,登录和注册不需要拦截，直接放行
     next()
