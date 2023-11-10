@@ -113,7 +113,8 @@ export default {
         if (valid) {
           service.post('http://114.132.67.226:3080//user/login', {
             acount: this.username,
-            password: this.password
+            password: this.password,
+            
           })
             .then(function (response) {
               console.log(response);

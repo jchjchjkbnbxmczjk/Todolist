@@ -19,15 +19,25 @@
           <el-input type="password" class="input-box" v-model="ruleForm.checkPass" placeholder="请再次输入密码"></el-input>
         </el-form-item>
 
+        <el-form-item class="form" prop="phoneNumber">
+          <div>
+            <label for="phoneNumber">手机号:</label>
+            <el-input type="text" v-model="ruleForm.phoneNumber" id="phoneNumber" class="input-box"
+              placeholder="请输入手机号"></el-input>
+            <button :disabled="isSend" @click.prevent="sendMsg">{{ isSend ? count : "发送验证码" }}</button>
+          </div>
+        </el-form-item>
         <el-form-item class="form">
-          <label>邮箱：</label>
-          <el-input class="input-box" v-model="ruleForm.mail" placeholder="请输入邮箱"></el-input>
+          <div>
+            <label>验证码：</label>
+            <el-input class="input-box" v-model="yanzhengma" placeholder="请输入验证码"></el-input>
+          </div>
         </el-form-item>
 
-        <el-form-item class="form">
+        <!-- <el-form-item class="form">
           <label>手机号：</label>
           <el-input class="input-box" v-model="ruleForm.tel" placeholder="请输入手机号"></el-input>
-        </el-form-item>
+        </el-form-item> -->
 
       </el-form>
       <button @click="submitRegister" @keydown.enter="submitRegister">提交</button>
@@ -36,6 +46,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   props: {
     msg: String
@@ -62,6 +73,15 @@ export default {
         callback();
       }
     };
+    let validatePhone = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入正确的手机号"));
+      } else if (value.length !== 11) {
+        callback(new Error("请输入正确的手机号!"));
+      } else {
+        callback();
+      }
+    }
 
 
     return {
@@ -70,21 +90,74 @@ export default {
         checkPass: "",
         username: "",
         password: "",
-        mail: "",
-        tel: "",
+        // mail: "",
+        phoneNumber: '',
       },
+      yanzhengma: "",
+      timeVal: null,
+      count: 60,
+      isSend: false,
       //效验规则
       rules: {
         pass: [{ required: true, validator: validatePass, trigger: "blur" }],
         checkPass: [
           { required: true, validator: validatePass2, trigger: "change" },
         ],
+        phoneNumber: [
+          { required: true, validator: validatePhone, trigger: "blur" }
+        ]
       },
 
 
 
     }
   }, methods: {
+    async sendMsg() {
+      // 点击按钮模拟请求验证码 写了个定时器 两秒之后返回发送验证码成功
+      // 假设一个真实的请求
+
+      // const zhenshiRequest = () => {
+      //   return axios.post('https://your-api-endpoint.com/send-verification-code', {
+      //     phoneNumber: this.phoneNumber,
+      //   })
+      // }
+
+      const moniRequest = () => {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve("发送验证码成功")
+          }, 2000)
+        })
+      }
+      if (!this.ruleForm.phoneNumber || this.ruleForm.phoneNumber.length !== 11) {
+        alert("请输入真实的手机号码")
+        return
+      }
+
+
+      const res = await moniRequest()
+      console.log(res);
+
+      this.isSend = true
+      this.timeVal = setInterval(() => {
+        if (this.count === 0) {
+          this.count = 60
+          this.isSend = false
+          clearInterval(this.timeVal)
+        }
+        this.count--
+      }, 1000)
+
+
+      // const res = 
+      //   .then(response => {
+      //     console.log('Verification code sent successfully', response.data);
+      //   })
+      //   .catch(error => {
+      //     console.error('Error sending verification code', error);
+      //   });
+    },
+
     //点击完成按钮触发handlefinish
     submitRegister: function () {
       if (localStorage['name'] === this.ruleForm.username) {
@@ -102,7 +175,7 @@ export default {
 
         localStorage.setItem('name', this.ruleForm.username);
         localStorage.setItem('password', this.ruleForm.checkPass);
-        localStorage.setItem('mail', this.ruleForm.mail);
+        // localStorage.setItem('mail', this.ruleForm.mail);
         localStorage.setItem('tel', this.ruleForm.tel);
         localStorage.setItem('s', "false");
         alert("注册成功");
@@ -130,7 +203,7 @@ export default {
 
 #contain {
   width: 580px;
-  height: 560px;
+  height: 600px;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -164,7 +237,7 @@ label {
 button {
   position: relative;
   height: 33px;
-  width: 150px;
+  width: 100px;
   background: #324057;
   border-radius: 10px;
   box-shadow: none;
