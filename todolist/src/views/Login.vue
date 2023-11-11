@@ -44,6 +44,9 @@
 </template>
 
 <script>
+import service from '@/utils/request';
+import axios from 'axios'
+
 export default {
   data() {
     return {
@@ -109,27 +112,40 @@ export default {
 
 
     requestTest(formName) {
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          service.post('http://114.132.67.226:3080//user/login', {
-            acount: this.username,
-            password: this.password,
-            
-          })
-            .then(function (response) {
-              console.log(response);
-            })
-            .catch(function (error) {
-              console.log(error);
-            });
+      // this.$refs[formName].validate(valid => {
+      // if (valid) {
+      //   service.post('http://10.23.98.35:3080/user/login', {
+      //     acount: this.username,
+      //     password: this.password,
 
-          console.log("password: " + this.password);
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
+      //   })
+      //     .then(function (response) {
+      //       console.log(response);
+      //     })
+      //     .catch(function (error) {
+      //       console.log(error);
+      //     });
 
-      });
+      //   console.log("password: " + this.password);
+      // } else {
+      //   console.log('error submit!!');
+      //   return false;
+      // }
+
+      axios.post('http://10.23.98.35:3080/user/login', {
+        acount: this.username,
+        password: this.password,
+
+      })
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
+
+      // });
 
       //       service.post('http://10.23.98.35:3080/user/login', {
       //         account: this.username,

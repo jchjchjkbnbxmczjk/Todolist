@@ -19,12 +19,13 @@
           <el-input type="password" class="input-box" v-model="ruleForm.checkPass" placeholder="请再次输入密码"></el-input>
         </el-form-item>
 
-        <el-form-item class="form" prop="phoneNumber">
+        <el-form-item class="form" prop="phone">
           <div>
-            <label for="phoneNumber">手机号:</label>
-            <el-input type="text" v-model="ruleForm.phoneNumber" id="phoneNumber" class="input-box"
-              placeholder="请输入手机号"></el-input>
-            <button :disabled="isSend" @click.prevent="sendMsg">{{ isSend ? count : "发送验证码" }}</button>
+            <label for="phone">手机号:</label>
+            <el-input type="text" v-model="ruleForm.phone" id="phone" class="input-box" placeholder="请输入手机号"></el-input>
+
+            <button1 :disabled="isSend" @click.prevent="sendMsg" @click="zhenshiRequest">{{ isSend ? count : "发送验证码" }}
+            </button1>
           </div>
         </el-form-item>
         <el-form-item class="form">
@@ -91,7 +92,7 @@ export default {
         username: "",
         password: "",
         // mail: "",
-        phoneNumber: '',
+        phone: '',
       },
       yanzhengma: "",
       timeVal: null,
@@ -103,41 +104,67 @@ export default {
         checkPass: [
           { required: true, validator: validatePass2, trigger: "change" },
         ],
-        phoneNumber: [
+        phone: [
           { required: true, validator: validatePhone, trigger: "blur" }
         ]
       },
-
-
-
     }
   }, methods: {
+
+    zhenshiRequest() {
+      console.log("huh");
+      axios.get(`http://10.23.98.35:3080/user/smscode?tele=${this.ruleForm.phone}`)
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(65);
+          console.log("error:" + error);
+        });
+      console.log("fasong");
+      console.log("phone:" + this.ruleForm.phone);
+
+    },
+
+
+
     async sendMsg() {
+
       // 点击按钮模拟请求验证码 写了个定时器 两秒之后返回发送验证码成功
       // 假设一个真实的请求
+      // function zhenshiRequest() {
+      //   // axios.post('https://114.132.67.226:3080/user/smscode', {
+      //   //   phone: this.ruleForm.phone,
+      //   // })
+      //   //   .then(function (response) {
+      //   //     console.log(response);
+      //   //   })
+      //   //   .catch(function (error) {
+      //   //     console.log(error);
+      //   //   });
+      //   console.log("fasong");
 
-      // const zhenshiRequest = () => {
-      //   return axios.post('https://your-api-endpoint.com/send-verification-code', {
-      //     phoneNumber: this.phoneNumber,
-      //   })
+      //   console.log("phone:" + this.ruleForm.phone);
       // }
 
-      const moniRequest = () => {
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            resolve("发送验证码成功")
-          }, 2000)
-        })
-      }
-      if (!this.ruleForm.phoneNumber || this.ruleForm.phoneNumber.length !== 11) {
+
+
+      //模拟发送请求
+      // const moniRequest = () => {
+      //   return new Promise((resolve, reject) => {
+      //     setTimeout(() => {
+      //       resolve("发送验证码成功")
+      //     }, 2000)
+      //   })
+      // }
+      if (!this.ruleForm.phone || this.ruleForm.phone.length !== 11) {
         alert("请输入真实的手机号码")
         return
       }
-
-
-      const res = await moniRequest()
-      console.log(res);
-
+      await this.zhenshiRequest();
+      // const res = await zhenshiRequest()
+      // console.log(res);
+      //设计倒计时
       this.isSend = true
       this.timeVal = setInterval(() => {
         if (this.count === 0) {
@@ -149,16 +176,21 @@ export default {
       }, 1000)
 
 
-      // const res = 
-      //   .then(response => {
-      //     console.log('Verification code sent successfully', response.data);
-      //   })
-      //   .catch(error => {
-      //     console.error('Error sending verification code', error);
-      //   });
+        // const res = 
+        .then(response => {
+          console.log('发送验证码成功', response.data);
+        })
+        .catch(error => {
+          console.error('发送验证码失败', error);
+        });
+
+
+
     },
 
-    //点击完成按钮触发handlefinish
+
+
+    //点击完成按钮触发 submitRegister
     submitRegister: function () {
       if (localStorage['name'] === this.ruleForm.username) {
         alert("用户名已存在");//如果用户名已存在则无法注册
@@ -192,7 +224,7 @@ export default {
 //css
 <style scoped>
 #background {
-  width: 100%;
+  width: 110%;
   height: 100%;
 
   background-size: 100% 100%;
@@ -233,7 +265,6 @@ label {
 }
 
 
-
 button {
   position: relative;
   height: 33px;
@@ -244,6 +275,8 @@ button {
   color: white;
   margin-left: 40px;
 }
+
+
 
 .input-box {
   width: 300px;
