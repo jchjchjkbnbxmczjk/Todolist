@@ -133,7 +133,7 @@ export default {
       // }
 
       axios.post('http://10.23.98.35:3080/user/login', {
-        acount: this.username,
+        account: this.username,
         password: this.password,
 
       })

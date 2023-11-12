@@ -24,7 +24,10 @@
             <label for="phone">手机号:</label>
             <el-input type="text" v-model="ruleForm.phone" id="phone" class="input-box" placeholder="请输入手机号"></el-input>
 
-            <button1 :disabled="isSend" @click.prevent="sendMsg" @click="zhenshiRequest">{{ isSend ? count : "发送验证码" }}
+            <button1 :disabled="isSend" @click.prevent="sendMsg">{{ isSend ? count :
+              "发送验证码" }}
+            </button1>
+            <button1 @click="zhenshiRequest">
             </button1>
           </div>
         </el-form-item>
@@ -112,7 +115,7 @@ export default {
   }, methods: {
 
     zhenshiRequest() {
-      console.log("huh");
+      // console.log("huh");
       axios.get(`http://10.23.98.35:3080/user/smscode?tele=${this.ruleForm.phone}`)
         .then(function (response) {
           console.log(response);
@@ -213,6 +216,22 @@ export default {
         alert("注册成功");
         this.$router.replace('/login');//完成注册后跳转至登录页面
       }
+
+      axios.post('http://10.23.98.35:3080/user/signup', {
+        account: this.ruleForm.username,
+        password: this.ruleForm.pass,
+        againpassword: this.ruleForm.checkPass,
+        phone: this.ruleForm.phone,
+        sms: this.yanzhengma
+
+      })
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
     }
   }
 };
