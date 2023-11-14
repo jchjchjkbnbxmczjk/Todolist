@@ -85,8 +85,7 @@ export default {
   data() {
     return {
       content: "",
-      todoLists: [
-      ],
+      todoLists: [],
       total: 30,
       // loading:false,
       width: 0,
@@ -159,18 +158,27 @@ export default {
 
     async getToDoList() {
       // 假设你有一个包含授权令牌的变量，名为'token'
-      const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJxcXEiLCJhY2NvdW50IjoicXFxIiwiZXhwIjoxNjk5ODk4OTA4fQ.m8JuTfKfy4UdPykaxWw4ehuy_eEymjp7FFwrf0Hb5FI'; // 用实际的令牌替换这里的值
-      // 在请求头中添加token，发送GET请求
+      const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJxcXEiLCJhY2NvdW50IjoicXFxIiwiZXhwIjoxNjk5OTc2MTU3fQ.Y_XDbCPCu_tbRR5gIREw_PxUQTIdqdrEHL4lDNUxPqM'; // 用实际的令牌替换这里的值
+      // // 在请求头中添加token，发送GET请求
       try {
         const res = await axios.get("http://10.23.98.35:3080/task/content", {
           params: { content: this.content },
           headers: {
-            token: token,
+            token: `${token}`,
             'Content-Type': 'application/json',
           },
         });
-        this.todoLists = res.data;
+        // // this.todoLists = res.data;
+        window.alert('do' + res.data[0].id);
         console.log('do' + res.data);
+        if (res.data && res.data.length > 0) {
+          this.todoLists = res.data;
+          console.log('do', res.data[0].id); // 访问第一个对象的 id 属性
+          window.alert('do' + res.data[0].id); // 弹出 id
+        } else {
+          this.todoLists = [];
+          console.log('未收到有效数据。');
+        }
       } catch (error) {
         console.log(error);
       }
@@ -179,13 +187,13 @@ export default {
     async getPageList() {
       //发送get请求
       try {
-        const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJxcXEiLCJhY2NvdW50IjoicXFxIiwiZXhwIjoxNjk5ODkwMzMwfQ.596ruZaBn84AoZUVpy4Dc0-nO7EGHNjSR7f0s1VIjpw'; // 替换成实际的 token
+        const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJxcXEiLCJhY2NvdW50IjoicXFxIiwiZXhwIjoxNjk5OTc2MDU5fQ.bLE8Ne1id1728HvBdpPafi91p-l-tG9PFaernmhfsSs'; // 替换成实际的 token
         const res = await axios.get("http://10.23.98.35:3080/task/page", {
           params: {
             ...this.query
           },
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json', // 根据你的需求设置 Content-Type
           },
         });

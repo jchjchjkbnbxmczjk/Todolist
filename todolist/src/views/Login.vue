@@ -63,7 +63,7 @@ export default {
       if (this.name === localStorage['username'] && this.password === localStorage['password']) {
         // 登录成功就存token
         //用sessionStorage本地存储方法
-        sessionStorage.setItem('token', "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxMjM0NTYiLCJhY2NvdW50IjoiMTIzNDU2IiwiZXhwIjoxNjk5ODcyODc3fQ.vOWHRkMnR01yQF32n78_F0T5UHK6EwwX9Pr6r1LM2JM")
+        sessionStorage.setItem('token', "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJxcXEiLCJhY2NvdW50IjoicXFxIiwiZXhwIjoxNjk5OTc1OTM1fQ.E9FcxARQOsWYL1Jl4bW5yQLCBZIqwUtcitK_AWqb1gY")
         // sessionStorage.setItem('token', "123");
         //在点击登录时，添加loading加载组件，保证一秒后跳转到todolist界面
         const loading = this.$loading({
@@ -74,6 +74,10 @@ export default {
         });
         setTimeout(() => {
           loading.close();
+
+          // 从sessionStorage中获取token
+          const token = sessionStorage.getItem('token');
+
           this.$router.push({ name: 'Todo' })//如果输入的名字以及密码正确路由跳转至个人页面
         }, 1000);  //登录正确后，过一秒跳转到todolist界面
 
