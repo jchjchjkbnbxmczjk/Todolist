@@ -209,9 +209,9 @@ export default {
         // console.log(this.ruleForm);
 
         localStorage.setItem('name', this.ruleForm.username);
+        localStorage.setItem('password', this.ruleForm.pass);
         localStorage.setItem('password', this.ruleForm.checkPass);
-        // localStorage.setItem('mail', this.ruleForm.mail);
-        localStorage.setItem('tel', this.ruleForm.tel);
+        localStorage.setItem('tel', this.ruleForm.phone);
         localStorage.setItem('s', "false");
         alert("注册成功");
         this.$router.replace('/login');//完成注册后跳转至登录页面

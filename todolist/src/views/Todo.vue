@@ -13,9 +13,15 @@
         </div>
         <!-- //搜索框 -->
         <el-input class="searchInput" placeholder="请输入搜索内容" v-model="content" clearable>
+          <!-- //这是Vue.js的模板标签，#append是模板的ID -->
           <template #append>
             <el-button @click="getToDoList" icon="el-icon-search"></el-button>
           </template>
+          <ul>
+            <li v-for="todo in todoLists" :key="todo.id">
+              {{ todo.title }}
+            </li>
+          </ul>
         </el-input>
 
 
@@ -78,6 +84,7 @@ export default {
   name: 'App',
   data() {
     return {
+      content: "",
       todoLists: [
       ],
       total: 30,
@@ -86,21 +93,24 @@ export default {
       height: 0,
       content: "",
       query: {
+        // label: '',
         label: '',
-        page: 10,
+        pages: 10,
         index: 1,
       },
 
     };
   },
-  //响应式
+  // //响应式
+  // mounted() {
+  //   window.addEventListener('resize', this.handleResize)
+  // },
+  // beforeDestroy() {
+  //   window.removeEventListener('resize', this.handleResize)
+  // },
   mounted() {
-    window.addEventListener('resize', this.handleResize)
+    this.getToDoList();
   },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.handleResize)
-  },
-
 
 
 
@@ -120,6 +130,8 @@ export default {
     else {
       this.todoLists = getList;
     }
+
+
   },
   methods: {
     loadingChange() {
@@ -147,17 +159,18 @@ export default {
 
     async getToDoList() {
       // 假设你有一个包含授权令牌的变量，名为'token'
-      const token = 'your_token_value'; // 用实际的令牌替换这里的值
+      const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJxcXEiLCJhY2NvdW50IjoicXFxIiwiZXhwIjoxNjk5ODk4OTA4fQ.m8JuTfKfy4UdPykaxWw4ehuy_eEymjp7FFwrf0Hb5FI'; // 用实际的令牌替换这里的值
       // 在请求头中添加token，发送GET请求
       try {
         const res = await axios.get("http://10.23.98.35:3080/task/content", {
           params: { content: this.content },
           headers: {
-            'Authorization': `Bearer ${token}`,
+            token: token,
             'Content-Type': 'application/json',
           },
         });
         this.todoLists = res.data;
+        console.log('do' + res.data);
       } catch (error) {
         console.log(error);
       }
@@ -166,16 +179,21 @@ export default {
     async getPageList() {
       //发送get请求
       try {
-        const token = 'your_token_here'; // 替换成实际的 token
+        const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJxcXEiLCJhY2NvdW50IjoicXFxIiwiZXhwIjoxNjk5ODkwMzMwfQ.596ruZaBn84AoZUVpy4Dc0-nO7EGHNjSR7f0s1VIjpw'; // 替换成实际的 token
         const res = await axios.get("http://10.23.98.35:3080/task/page", {
-          params: { ...this.query },
+          params: {
+            ...this.query
+          },
           headers: {
             'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json', // 根据你的需求设置 Content-Type
           },
         });
         this.todoLists = res.data;
+        // console.log(response.data)
       } catch (error) {
         console.log(error);
+        // console.log(error.response.data)
       }
     },
 
@@ -236,6 +254,7 @@ export default {
             'Content-Type': 'application/json', // 根据你的需求设置 Content-Type
           },
         });
+
         // 处理响应
         console.log(response.data);
       } catch (error) {

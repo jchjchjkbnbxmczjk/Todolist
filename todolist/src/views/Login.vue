@@ -63,8 +63,8 @@ export default {
       if (this.name === localStorage['username'] && this.password === localStorage['password']) {
         // 登录成功就存token
         //用sessionStorage本地存储方法
-        // sessionStorage.setItem('token',"jfldksgjhodjgpoagpogkdajgpojgpod41564hg6sgfhdsoiahgoiahgfo")
-        sessionStorage.setItem('token', "123");
+        sessionStorage.setItem('token', "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxMjM0NTYiLCJhY2NvdW50IjoiMTIzNDU2IiwiZXhwIjoxNjk5ODcyODc3fQ.vOWHRkMnR01yQF32n78_F0T5UHK6EwwX9Pr6r1LM2JM")
+        // sessionStorage.setItem('token', "123");
         //在点击登录时，添加loading加载组件，保证一秒后跳转到todolist界面
         const loading = this.$loading({
           lock: true,
