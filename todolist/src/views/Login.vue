@@ -44,7 +44,8 @@
 </template>
 
 <script>
-import service from '@/utils/request';
+// import service from '@/utils/request';
+import service from "../utils/request"
 import axios from 'axios'
 
 export default {
@@ -63,7 +64,7 @@ export default {
       if (this.name === localStorage['username'] && this.password === localStorage['password']) {
         // 登录成功就存token
         //用sessionStorage本地存储方法
-        sessionStorage.setItem('token', "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJxcXEiLCJhY2NvdW50IjoicXFxIiwiZXhwIjoxNjk5OTc1OTM1fQ.E9FcxARQOsWYL1Jl4bW5yQLCBZIqwUtcitK_AWqb1gY")
+        // sessionStorage.setItem('token', "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJxcXEiLCJhY2NvdW50IjoicXFxIiwiZXhwIjoxNzAwMDQ0NTIxfQ.SFzC-yuHl2XcS5arwRSSkeJFweDhX4R-65ilWyHe2EU")
         // sessionStorage.setItem('token', "123");
         //在点击登录时，添加loading加载组件，保证一秒后跳转到todolist界面
         const loading = this.$loading({
@@ -75,8 +76,8 @@ export default {
         setTimeout(() => {
           loading.close();
 
-          // 从sessionStorage中获取token
-          const token = sessionStorage.getItem('token');
+          // // 从sessionStorage中获取token
+          // const token = sessionStorage.getItem('token');
 
           this.$router.push({ name: 'Todo' })//如果输入的名字以及密码正确路由跳转至个人页面
         }, 1000);  //登录正确后，过一秒跳转到todolist界面
@@ -136,17 +137,22 @@ export default {
       //   return false;
       // }
 
-      axios.post('http://10.23.98.35:3080/user/login', {
+      console.log(12112);
+
+      axios.post('http://114.132.67.226:23080/user/login', {
         account: this.username,
         password: this.password,
 
       })
         .then(function (response) {
-          console.log(response);
+          console.log(response.data.token);
+          sessionStorage.setItem('token', response.data.token)
         })
         .catch(function (error) {
-          console.log(error);
+          console.log("error:" + error);
         });
+
+      console.log(21378);
 
 
       // });

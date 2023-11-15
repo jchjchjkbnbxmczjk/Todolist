@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router/index.js'
 import store from './store'
 import ElementUI from 'element-ui'; //element元素
-import Antd from 'ant-design-vue' ; //引入组件
+import Antd from 'ant-design-vue'; //引入组件
 import 'element-ui/lib/theme-chalk/index.css'; //element css元素
 import 'ant-design-vue/dist/antd.css';
 import axios from 'axios';
@@ -41,4 +41,4 @@ new Vue({
   //   todos: []
   // },
   render: h => h(App)
-}).$mount('#app')
+});

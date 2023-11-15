@@ -24,7 +24,6 @@
           </ul>
         </el-input>
 
-
         <div class="header-right">
           <button class="headerAll" @click="selectAll">全选</button>
           <button class="headerAdd" @click="handleAdd">添加</button>
@@ -46,6 +45,10 @@
             <input class="content-input" v-model="item.text" icon="thing" placeholder="请输入任务"
               onIconClick={this.handleIconClick.bind(this)} :disabled="item.isCheck"
               :class="item.isCheck ? 'line-through' : ''" @blur="leaveTest" />
+
+            <!-- 添加以下行，显示 content -->
+            <p>{{ item.content }}</p>
+
             <!-- 时间以及删除按钮 -->
             <div class="content-right">
               <p>{{ item.time }}</p>
@@ -80,11 +83,12 @@
 //格式化引入插件dayjs
 import dayjs from "dayjs"
 import axios from "axios"
+import service from "../utils/request"
 export default {
   name: 'App',
   data() {
     return {
-      content: "",
+      // content: "",
       todoLists: [],
       total: 30,
       // loading:false,
@@ -108,7 +112,19 @@ export default {
   //   window.removeEventListener('resize', this.handleResize)
   // },
   mounted() {
-    this.getToDoList();
+    // this.getToDoList();
+    console.log('组件已挂载');
+    // 假设你有一个包含授权令牌的变量，名为'token'
+    //   const token = sessionStorage.getItem('token');
+    //   // 在请求头中添加token，发送GET请求
+    //   try {
+    //     //  // 从sessionStorage中获取token
+    //     // const token = sessionStorage.getItem('token');
+    //     const res = service.get("/task"
+    //     );
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
   },
 
 
@@ -133,6 +149,9 @@ export default {
 
   },
   methods: {
+
+
+
     loadingChange() {
       //   this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
       //   type: 'warning'
@@ -156,17 +175,15 @@ export default {
       });
     },
 
-    async getToDoList() {
+    getToDoList() {
       // 假设你有一个包含授权令牌的变量，名为'token'
-      const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJxcXEiLCJhY2NvdW50IjoicXFxIiwiZXhwIjoxNjk5OTc2MTU3fQ.Y_XDbCPCu_tbRR5gIREw_PxUQTIdqdrEHL4lDNUxPqM'; // 用实际的令牌替换这里的值
-      // // 在请求头中添加token，发送GET请求
+      const token = sessionStorage.getItem('token');
+      // 在请求头中添加token，发送GET请求
       try {
-        const res = await axios.get("http://10.23.98.35:3080/task/content", {
-          params: { content: this.content },
-          headers: {
-            token: `${token}`,
-            'Content-Type': 'application/json',
-          },
+        //  // 从sessionStorage中获取token
+        // const token = sessionStorage.getItem('token');
+        const res = service.get("/task/content", {
+          //   params: { content: this.content },
         });
         // // this.todoLists = res.data;
         window.alert('do' + res.data[0].id);
@@ -182,20 +199,44 @@ export default {
       } catch (error) {
         console.log(error);
       }
+      finally {
+        this.todoLists = [
+          {
+            "id": 69,
+            "content": "222",
+            "updateTime": [
+              2023,
+              11,
+              14,
+              21,
+              22,
+              17
+            ],
+            "label": "laborum exercitation Ut magna",
+            "serialNumber": 3,
+            "status": 0
+          },
+
+
+        ];
+      }
+
+
     },
     //异步函数声明
     async getPageList() {
+      //  // 从sessionStorage中获取token
+      const token = sessionStorage.getItem('token');
       //发送get请求
       try {
-        const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJxcXEiLCJhY2NvdW50IjoicXFxIiwiZXhwIjoxNjk5OTc2MDU5fQ.bLE8Ne1id1728HvBdpPafi91p-l-tG9PFaernmhfsSs'; // 替换成实际的 token
-        const res = await axios.get("http://10.23.98.35:3080/task/page", {
+        const res = await service.get("/task/page", {
           params: {
             ...this.query
           },
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json', // 根据你的需求设置 Content-Type
-          },
+          // headers: {
+          //   Authorization: `Bearer ${token}`,
+          //   'Content-Type': 'application/json', // 根据你的需求设置 Content-Type
+          // },
         });
         this.todoLists = res.data;
         // console.log(response.data)
@@ -248,19 +289,19 @@ export default {
       //  })
     },
     //实现删除功能
-    async deleOne(index, id) {
+    deleOne(index, id) {
       if (this.todoLists[index].id == id)
         this.todoLists.splice(index, 1)  //删除一条
       this.storageTest();
-
+      // console.log('id:' + this.todoLists[index].id);
       //发送请求
+      const token = sessionStorage.getItem('token');
       try {
-        const token = 'yourActualTokenValue'; // 替换为实际的 token
-        const response = await axios.delete(`http://10.23.98.35:3080/task/{ids}/${index, id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json', // 根据你的需求设置 Content-Type
-          },
+        const response = axios.delete(`/task/ids=${this.todoLists[index].id}`, {
+          // headers: {
+          //   token: `${token}`,
+          //   'Content-Type': 'application/json', // 根据你的需求设置 Content-Type
+          // },
         });
 
         // 处理响应
@@ -269,9 +310,6 @@ export default {
         // 处理错误
         console.error('Error:', error);
       }
-
-
-
     },
     //实现选中功能
     selectTest(index, id) {

@@ -6,7 +6,7 @@ const request = axios.create({
 		return true
 	},
 	// 指定基本的url地址
-	baseURL: 'http://10.23.98.35:3080',
+	baseURL: 'http://114.132.67.226:23080',
 	// baseURL: '/Login',
 })
 
