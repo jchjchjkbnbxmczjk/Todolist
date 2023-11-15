@@ -297,7 +297,7 @@ export default {
       //发送请求
       const token = sessionStorage.getItem('token');
       try {
-        const response = axios.delete(`/task/ids=${this.todoLists[index].id}`, {
+        const response = service.delete(`/task/ids=${this.todoLists[index].id}`, {
           // headers: {
           //   token: `${token}`,
           //   'Content-Type': 'application/json', // 根据你的需求设置 Content-Type
