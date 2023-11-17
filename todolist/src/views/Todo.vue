@@ -32,30 +32,36 @@
 
       <!-- //页面主体部分 -->
       <a-layout-content>
+
         <div class="content">
-          <div class="content-item" v-for="(item, index) in todoLists" :key="item.id">
-            <!-- 点击选中 -->
-            <div class="content-left">
-              <div>
-                <span :style="item.isCheck ? 'opacity : 1' : 'opacity : 0'" @click="selectTest(index, item.id)">
-                </span>
+          <draggable v-model="todoLists" @end="onDragEnd">
+            <div class="content-item" v-for="(item, index) in todoLists" :key="item.id">
+              <!-- 点击选中 -->
+              <div class="content-left">
+                <div>
+                  <span :style="item.isCheck ? 'opacity : 1' : 'opacity : 0'" @click="selectTest(index, item.id)">
+                  </span>
+                </div>
+
+              </div>
+              <!-- input输入框 -->
+              <input class="content-input" v-model="item.content" icon="thing" placeholder="请输入任务"
+                onIconClick={this.handleIconClick.bind(this)} :disabled="item.isCheck"
+                :class="item.isCheck ? 'line-through' : ''" @blur="leaveTest">
+
+
+              <!-- 添加以下行，显示 updataTime -->
+              <p>{{ item.updateTime }}</p>
+
+              <!-- 时间以及删除按钮 -->
+              <div class="content-right">
+                <p>{{ item.time }}</p>
+                <button class="deleOne" @click="deleOne(index, item.id)">删除</button>
               </div>
             </div>
-            <!-- input输入框 -->
-            <input class="content-input" v-model="item.content" icon="thing" placeholder="请输入任务"
-              onIconClick={this.handleIconClick.bind(this)} :disabled="item.isCheck"
-              :class="item.isCheck ? 'line-through' : ''" @blur="leaveTest">
-
-            <!-- 添加以下行，显示 updataTime -->
-            <p>{{ item.updateTime }}</p>
-
-            <!-- 时间以及删除按钮 -->
-            <div class="content-right">
-              <p>{{ item.time }}</p>
-              <button class="deleOne" @click="deleOne(index, item.id)">删除</button>
-            </div>
-          </div>
+          </draggable>
         </div>
+
         <!-- //分页查询 -->
         <div class="pageContainer">
           <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -84,7 +90,11 @@
 import dayjs from "dayjs"
 import axios from "axios"
 import service from "../utils/request"
+import draggable from 'vuedraggable'
 export default {
+  components: {
+    draggable,
+  },
   name: 'App',
   data() {
     content: ""
@@ -98,20 +108,20 @@ export default {
       content: "",
       query: {
         // label: '',
-        label: '',
+        content: '',
         pages: 10,
         index: 1,
       },
 
     };
   },
-  // //响应式
-  // mounted() {
-  //   window.addEventListener('resize', this.handleResize)
-  // },
-  // beforeDestroy() {
-  //   window.removeEventListener('resize', this.handleResize)
-  // },
+  //响应式
+  mounted() {
+    window.addEventListener('resize', this.handleResize)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize)
+  },
   mounted() {
     // this.getToDoList();
     console.log('组件已挂载');
@@ -121,8 +131,22 @@ export default {
     try {
       //  // 从sessionStorage中获取token
       // const token = sessionStorage.getItem('token');
-      const res = service.get("/task");
-      console.log('res:', res.content);
+      const res = service.get("/task")
+        .then(res => {
+          console.log("response:" + JSON.stringify(res.data));
+          console.log('do:', res);
+          if (res.data.length > 0) {
+            this.todoLists = res.data;
+            // for (let i = 0; i <= response.length; i++) {
+            //   this.todoLists.push(response.data[i])
+            //   console.log(3143);
+            // }
+            console.log('todo:', this.todoLists);
+            console.log('do:', res.data);
+          }
+        }).catch(error => {
+          console.error("error:" + error);
+        })
     } catch (error) {
       console.log(error);
     }
@@ -150,6 +174,42 @@ export default {
 
   },
   methods: {
+    onDragEnd(event, index) {
+      // 拖放结束后的处理逻辑
+      this.storageTest(); // 更新本地存储
+      console.log("onDragEnd - event:", event);
+
+      // this.todoLists({
+      //   id: this.randomID(),  //需要id作为唯一标识
+      // })
+      // 获取任务的起始位置和结束位置的索引
+      if (this.todoLists.length > 0) {
+        const startIndex = event.oldIndex;
+        const endIndex = event.newIndex;
+        console.log("startIndex:", startIndex);
+        console.log("endIndex:", endIndex);
+        console.log(123);
+        //  // 从sessionStorage中获取token
+        const token = sessionStorage.getItem('token');
+        //发送get请求
+        try {
+          const res = service.get("/task/sort", {
+            params: {
+              startNumber: this.todoLists[startIndex].id,
+              endNumber: this.todoLists[endIndex].id,
+            },
+            // headers: {
+            //  // 从sessionStorage中获取token
+            //   'Content-Type': 'application/json', // 根据你的需求设置 Content-Type
+            // },
+          });
+
+        } catch (error) {
+          console.log(error);
+          // console.log(error.response.data)
+        }
+      }
+    },
     loadingChange() {
       //   this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
       //   type: 'warning'
@@ -186,6 +246,7 @@ export default {
         });
         // this.todoLists = res.data;
         // window.alert(res);
+        // .then(response => {
         console.log('res:', res.data);
         if (res.data.length > 0) {
           this.todoLists = res.data;
@@ -198,7 +259,12 @@ export default {
           this.todoLists = [];
           console.log('未收到有效数据。');
         }
-      } catch (error) {
+        // }
+        // ).catch(error => {
+        //   console.error("error:" + error);
+        // })
+      }
+      catch (error) {
         console.log(error);
       }
       // finally {
@@ -236,7 +302,7 @@ export default {
             ...this.query
           },
           // headers: {
-          //   Authorization: `Bearer ${token}`,
+          //  // 从sessionStorage中获取token
           //   'Content-Type': 'application/json', // 根据你的需求设置 Content-Type
           // },
         });
@@ -290,18 +356,17 @@ export default {
       //   this.$refs.inputBox[this.inputLength].focus()
       //  })
 
-      // const token = sessionStorage.getItem('token');
-      // const res = service.post('/task', {
-      //   content: this.content,
+      const token = sessionStorage.getItem('token');
+      const res = service.post('/task', {
+        content: this.content,
 
-
-      // })
-      //   .then(response => {
-      //     console.log(response);
-      //   })
-      //   .catch(error => {
-      //     console.error(error);
-      //   });
+      })
+        .then(response => {
+          console.log(response);
+        })
+        .catch(error => {
+          console.error(error);
+        });
 
 
 
@@ -312,15 +377,17 @@ export default {
         this.todoLists.splice(index, 1)  //删除一条
       this.storageTest();
       console.log('id:' + this.todoLists[index].id);
+
       // 发送请求
       const token = sessionStorage.getItem('token');
       try {
-        const response = service.delete(`/task/${this.todoLists[index].id}`, {
+        const response = service.delete(`/task/${this.todoLists[index].id}`
+
           // headers: {
           //   token: `${token}`,
           //   'Content-Type': 'application/json', // 根据你的需求设置 Content-Type
           // },
-        });
+        );
 
         // 处理响应
         console.log(response.data);
@@ -337,6 +404,20 @@ export default {
         this.todoLists[index].isCheck = !this.todoLists[index].isCheck //点击一次为真（true）再点一次为假（false）
         this.storageTest();
       }
+      //put请求
+      //  // 从sessionStorage中获取token
+      const token = sessionStorage.getItem('token');
+      const res = service.put(`/status` + this.todoLists[index].id, {
+
+      })
+        .then(response => {
+          // Handle the successful response
+          console.log(response);
+        })
+        .catch(error => {
+          // Handle errors
+          console.error(error);
+        })
     },
 
     //实现全选功能
@@ -354,6 +435,32 @@ export default {
     leaveTest() {
       console.log("输入完成");
       this.storageTest();
+      //put请求
+      //  // 从sessionStorage中获取token
+      const token = sessionStorage.getItem('token');
+      // const id = this.todoLists[index].id;
+      const taskId = this.todoLists[index].id; // 替换为您要更新的任务的实际ID
+      try {
+        const updatedData = {
+          // 更新的任务数据
+          content: this.content,
+          // 其他需要更新的字段
+        };
+        const response = service.put(`/task${taskId}`, updatedData);
+        // .then(response => {
+        // Handle the successful response
+        console.log(response.data);
+      }
+      // })
+      // .catch(error => {
+      catch (error) {
+        console.error(error);
+      }
+
+
+      // updateTask(taskId, updatedData);
+
+
     },
 
     //实现本地存储

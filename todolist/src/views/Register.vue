@@ -135,20 +135,20 @@ export default {
 
       // 点击按钮模拟请求验证码 写了个定时器 两秒之后返回发送验证码成功
       // 假设一个真实的请求
-      function zhenshiRequest() {
-        // axios.post('https://114.132.67.226:3080/user/smscode', {
-        //   phone: this.ruleForm.phone,
-        // })
-        //   .then(function (response) {
-        //     console.log(response);
-        //   })
-        //   .catch(function (error) {
-        //     console.log(error);
-        //   });
-        console.log("fasong");
+      // function zhenshiRequest() {
+      //   // axios.post('https://114.132.67.226:3080/user/smscode', {
+      //   //   phone: this.ruleForm.phone,
+      //   // })
+      //   //   .then(function (response) {
+      //   //     console.log(response);
+      //   //   })
+      //   //   .catch(function (error) {
+      //   //     console.log(error);
+      //   //   });
+      //   console.log("fasong");
 
-        console.log("phone:" + this.ruleForm.phone);
-      }
+      //   console.log("phone:" + this.ruleForm.phone);
+      // }
 
 
 
@@ -177,7 +177,6 @@ export default {
         }
         this.count--
       }, 1000)
-
 
         // const res = 
         .then(response => {

@@ -37,7 +37,7 @@
       </form>
       <el-button type="submit" @click="requestTest" @click.prevent="openLoading" v-loading="loading" plain>登录</el-button>
       <!-- v-on点击按钮触发handlelogin方法 -->
-      <el-button @click="loadingChange" @click.prevent="handleregister">注册</el-button>
+      <el-button @click.prevent="handleregister">注册</el-button>
       <router-view />
     </div>
   </div>
