@@ -139,7 +139,7 @@ export default {
 
       console.log(12112);
 
-      axios.post('http://114.132.67.226:23080/user/login', {
+      axios.post('http://114.132.67.226:3080/user/login', {
         account: this.username,
         password: this.password,
 

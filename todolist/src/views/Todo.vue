@@ -19,7 +19,7 @@
           </template>
           <ul>
             <li v-for="todo in todoLists" :key="todo.id">
-              {{ todo.title }}
+              {{ todo.content }}
             </li>
           </ul>
         </el-input>
@@ -42,12 +42,12 @@
               </div>
             </div>
             <!-- input输入框 -->
-            <input class="content-input" v-model="item.text" icon="thing" placeholder="请输入任务"
+            <input class="content-input" v-model="item.content" icon="thing" placeholder="请输入任务"
               onIconClick={this.handleIconClick.bind(this)} :disabled="item.isCheck"
-              :class="item.isCheck ? 'line-through' : ''" @blur="leaveTest" />
+              :class="item.isCheck ? 'line-through' : ''" @blur="leaveTest">
 
-            <!-- 添加以下行，显示 content -->
-            <p>{{ item.content }}</p>
+            <!-- 添加以下行，显示 updataTime -->
+            <p>{{ item.updateTime }}</p>
 
             <!-- 时间以及删除按钮 -->
             <div class="content-right">
@@ -60,7 +60,7 @@
         <div class="pageContainer">
           <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
             layout="sizes, prev, pager, next" :page-size="query.pages" :current-page="query.index"
-            :page-sizes="[10, 20, 30, 40]" :total="total" />
+            :page-sizes="[2, 20, 30, 40]" :total="total" />
         </div>
 
       </a-layout-content>
@@ -87,10 +87,11 @@ import service from "../utils/request"
 export default {
   name: 'App',
   data() {
+    content: ""
     return {
       // content: "",
       todoLists: [],
-      total: 30,
+      total: 0,
       // loading:false,
       width: 0,
       height: 0,
@@ -115,16 +116,16 @@ export default {
     // this.getToDoList();
     console.log('组件已挂载');
     // 假设你有一个包含授权令牌的变量，名为'token'
-    //   const token = sessionStorage.getItem('token');
-    //   // 在请求头中添加token，发送GET请求
-    //   try {
-    //     //  // 从sessionStorage中获取token
-    //     // const token = sessionStorage.getItem('token');
-    //     const res = service.get("/task"
-    //     );
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
+    const token = sessionStorage.getItem('token');
+    // 在请求头中添加token，发送GET请求
+    try {
+      //  // 从sessionStorage中获取token
+      // const token = sessionStorage.getItem('token');
+      const res = service.get("/task");
+      console.log('res:', res.content);
+    } catch (error) {
+      console.log(error);
+    }
   },
 
 
@@ -149,9 +150,6 @@ export default {
 
   },
   methods: {
-
-
-
     loadingChange() {
       //   this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
       //   type: 'warning'
@@ -175,23 +173,27 @@ export default {
       });
     },
 
-    getToDoList() {
+    async getToDoList() {
       // 假设你有一个包含授权令牌的变量，名为'token'
       const token = sessionStorage.getItem('token');
+      // console.log('getToDoList')
       // 在请求头中添加token，发送GET请求
       try {
-        //  // 从sessionStorage中获取token
+        // // 从sessionStorage中获取token
         // const token = sessionStorage.getItem('token');
-        const res = service.get("/task/content", {
-          //   params: { content: this.content },
+        const res = await service.get("/task/content", {
+          params: { content: this.content },
         });
-        // // this.todoLists = res.data;
-        window.alert('do' + res.data[0].id);
-        console.log('do' + res.data);
-        if (res.data && res.data.length > 0) {
+        // this.todoLists = res.data;
+        // window.alert(res);
+        console.log('res:', res.data);
+        if (res.data.length > 0) {
           this.todoLists = res.data;
-          console.log('do', res.data[0].id); // 访问第一个对象的 id 属性
-          window.alert('do' + res.data[0].id); // 弹出 id
+          // for (let i = 0; i < res.data.length; i++) {
+          //   this.todoLists.push(res.data[i])
+          // }
+          console.log('do:', res); // 访问第一个对象的 id 属性
+          // window.alert('do:' + res.data); // 弹出 id
         } else {
           this.todoLists = [];
           console.log('未收到有效数据。');
@@ -199,27 +201,27 @@ export default {
       } catch (error) {
         console.log(error);
       }
-      finally {
-        this.todoLists = [
-          {
-            "id": 69,
-            "content": "222",
-            "updateTime": [
-              2023,
-              11,
-              14,
-              21,
-              22,
-              17
-            ],
-            "label": "laborum exercitation Ut magna",
-            "serialNumber": 3,
-            "status": 0
-          },
+      // finally {
+      //   this.todoLists = [
+      //     {
+      //       "id": 69,
+      //       "content": "222",
+      //       "updateTime": [
+      //         2023,
+      //         11,
+      //         14,
+      //         21,
+      //         22,
+      //         17
+      //       ],
+      //       "label": "laborum exercitation Ut magna",
+      //       "serialNumber": 3,
+      //       "status": 0
+      //     },
 
 
-        ];
-      }
+      //   ];
+      // }
 
 
     },
@@ -238,8 +240,8 @@ export default {
           //   'Content-Type': 'application/json', // 根据你的需求设置 Content-Type
           // },
         });
-        this.todoLists = res.data;
-        // console.log(response.data)
+        this.todoLists = res.data.tasks;
+        this.total = res.data.total
       } catch (error) {
         console.log(error);
         // console.log(error.response.data)
@@ -254,13 +256,13 @@ export default {
 
     //每页显示多少条数据
     handleSizeChange(val) {
-      console.log('每页${val}条');
+      console.log(`每页${val}条`);
       this.query.pages = val;
       this.getPageList()
     },
     //当前页数
     handleCurrentChange(val) {
-      console.log('当前页:${val}');
+      console.log(`当前页:${val}`);
       this.query.index = val;
       this.getPageList()
     },
@@ -287,17 +289,33 @@ export default {
       //  this.$nextTick(() => {     //保证渲染完成之后获取焦点
       //   this.$refs.inputBox[this.inputLength].focus()
       //  })
+
+      // const token = sessionStorage.getItem('token');
+      // const res = service.post('/task', {
+      //   content: this.content,
+
+
+      // })
+      //   .then(response => {
+      //     console.log(response);
+      //   })
+      //   .catch(error => {
+      //     console.error(error);
+      //   });
+
+
+
     },
     //实现删除功能
     deleOne(index, id) {
       if (this.todoLists[index].id == id)
         this.todoLists.splice(index, 1)  //删除一条
       this.storageTest();
-      // console.log('id:' + this.todoLists[index].id);
-      //发送请求
+      console.log('id:' + this.todoLists[index].id);
+      // 发送请求
       const token = sessionStorage.getItem('token');
       try {
-        const response = service.delete(`/task/ids=${this.todoLists[index].id}`, {
+        const response = service.delete(`/task/${this.todoLists[index].id}`, {
           // headers: {
           //   token: `${token}`,
           //   'Content-Type': 'application/json', // 根据你的需求设置 Content-Type

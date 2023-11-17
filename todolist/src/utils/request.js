@@ -7,7 +7,7 @@ import { Message } from 'element-ui';
 const service = axios.create({
     // 公共接口--这里注意后面会讲
     // baseURL: "http://10.23.98.35:3080",
-    baseURL: "http://114.132.67.226:23080",
+    baseURL: "http://114.132.67.226:3080",
     // 超时时间 单位是ms，这里设置了3s的超时时间
     timeout: 3 * 1000
 })
