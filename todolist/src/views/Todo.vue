@@ -29,7 +29,7 @@
           <button class="headerAdd" @click="unFinish">未完成</button>
         </div> -->
         <div class="header-right">
-          <button class="headerAll" @click="selectAll">全选</button>
+          <button class="headerAll" @click="selectAll">已完成</button>
           <button class="headerAdd" @click="handleAdd">添加</button>
           <!-- <button class="headerAll" @click="Finish">已完成</button> -->
         </div>
@@ -44,15 +44,16 @@
               <!-- 点击选中 -->
               <div class="content-left">
                 <div>
-                  <span :style="item.isCheck ? 'opacity : 1' : 'opacity : 0'" @click="selectTest(index, item.id)">
+                  <span :style="item.status ? 'opacity : 1' : 'opacity : 0'" @click="selectTest(index, item.id)">
                   </span>
                 </div>
 
               </div>
               <!-- input输入框 -->
               <input class="content-input" v-model="item.content" icon="thing" placeholder="请输入任务"
-                onIconClick={this.handleIconClick.bind(this)} :disabled="item.isCheck"
-                :class="item.isCheck ? 'line-through' : ''" @blur="leaveTest(index, id)">
+                onIconClick={this.handleIconClick.bind(this)} :disabled="item.status == 1"
+                :class="item.status ? 'line-through' : ''" @blur="leaveTest(index, item.id)">
+              <span>{{ item.id }}</span>
 
 
               <!-- 添加以下行，显示 updataTime -->
@@ -79,7 +80,6 @@
       </a-layout-content>
     </div>
     <a-layout-footer>
-
       <el-button @click="loadingChange" type="primary" pain> 使用说明</el-button>
       <!-- <Button type="text" @click="loadingChange">点击打开 Message Box</Button> -->
       <!-- <li >
@@ -121,24 +121,37 @@ export default {
         pages: 10,
         index: 1,
       },
-
+      clickedIndex: 0,  // 在数据中添加 clickedIndex
     };
   },
+  //监听数据的变化
+  watch: {
+    query: {
+      //回调函数
+      handler(newValue, oldValue) {
+        this.getPageList()
+      },
+      deep: true, //深度监听
+      // immediate: true  //组件创建时立即执行一次 handler
+    },
+
+  },
   //响应式
+  // mounted() {
+  //   window.addEventListener('resize', this.handleResize)
+  // },
+  // beforeDestroy() {
+  //   window.removeEventListener('resize', this.handleResize)
+  // },
   mounted() {
-    window.addEventListener('resize', this.handleResize)
-  },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.handleResize)
-  },
-  mounted() {
+
     // this.getToDoList();
     console.log('组件已挂载');
     // 假设你有一个包含授权令牌的变量，名为'token'
     const token = sessionStorage.getItem('token');
     // 在请求头中添加token，发送GET请求
     try {
-      //  // 从sessionStorage中获取token
+      // 从sessionStorage中获取token
       // const token = sessionStorage.getItem('token');
       const res = service.get("/task")
         .then(res => {
@@ -158,6 +171,9 @@ export default {
         })
       // this.handleAdd();
       // this.leaveTest();
+
+
+      this.getPageList()
     } catch (error) {
       console.log(error);
     }
@@ -184,6 +200,7 @@ export default {
 
 
   },
+
   methods: {
 
     async fetchData() {
@@ -343,6 +360,7 @@ export default {
     //异步函数声明
     async getPageList() {
       //  // 从sessionStorage中获取token
+
       const token = sessionStorage.getItem('token');
       //发送get请求
       try {
@@ -372,14 +390,19 @@ export default {
     //每页显示多少条数据
     handleSizeChange(val) {
       console.log(`每页${val}条`);
-      this.query.pages = val;
-      this.getPageList()
+      // this.query.pages = val;
+      this.$set(this.query, 'pages', val)
+      // let  arr=[[{index:1,name:'dxy'}]]
+      // this.$set(arr,0,{...arr[0],name:'uuuu'})
+
     },
     //当前页数
     handleCurrentChange(val) {
       console.log(`当前页:${val}`);
-      this.query.index = val;
-      this.getPageList()
+      // this.query.index = val;
+      //用于设置对象的响应式属性，属性是响应式的
+      this.$set(this.query, 'index', val)
+
     },
 
 
@@ -392,13 +415,7 @@ export default {
 
     //实现添加功能
     handleAdd(index, id) {
-      //记录;并且点击添加之后向下运行
-      this.todoLists.unshift({
-        id: this.randomID(),  //需要id作为唯一标识
-        isCheck: false, //是否选中
-        text: "",  //输入框中的内容
-        time: dayjs(new Date).format("YYYY-MM-DD HH:mm")  //时间
-      })
+
       //    //点击添加之后获取焦点
       //  const inputLength=this.todoLists.length -1
       //  this.$nextTick(() => {     //保证渲染完成之后获取焦点
@@ -413,6 +430,14 @@ export default {
         .then(res => {
           console.log(res);
           console.log("res:", res.data.id);
+          //记录;并且点击添加之后向下运行
+          this.todoLists.unshift({
+            id: res.data.id,  //需要id作为唯一标识
+            // isCheck: false, //是否选中
+            text: "",  //输入框中的内容
+            status: false,
+            time: dayjs(new Date).format("YYYY-MM-DD HH:mm")  //时间
+          })
           //   console.log("response:" + JSON.stringify(res.data));
           // if (res.data.length > 0) {
           // this.todoLists.id = res.data.id;
@@ -457,19 +482,26 @@ export default {
         console.error('Error:', error);
       }
     },
-    //实现选中功能
+    //实现选中功能（已完成）
     selectTest(index, id) {
       console.log(index);
       console.log(id);
-      if (this.todoLists[index].id === id) {  //判断index的id是否等于当前的id
-        this.todoLists[index].isCheck = !this.todoLists[index].isCheck //点击一次为真（true）再点一次为假（false）
-        this.storageTest();
-      }
+
+      // if (this.todoLists[index].id === id) {  //判断index的id是否等于当前的id
+      //   this.todoLists[index].status = !this.todoLists[index].status //点击一次为真（true）再点一次为假（false）
+      //   this.storageTest();
+      // }
       //put请求
       //  // 从sessionStorage中获取token
       const token = sessionStorage.getItem('token');
       const res = service.put(`/status?id=${this.todoLists[index].id}`,)
         .then(response => {
+          // if (this.todoLists[index].id === id) {  //判断index的id是否等于当前的id
+          //   this.todoLists[index].status = !this.todoLists[index].status //点击一次为真（true）再点一次为假（false）
+          //   this.storageTest();
+          // }
+          this.todoLists[index].status = true
+          // this.$set(this.todoLists[index], 'status', true)
           // Handle the successful response
           console.log(response);
         })
@@ -479,15 +511,54 @@ export default {
         })
     },
 
-    //实现全选功能
+    //实现全选功能(已完成)
     selectAll() {
-      this.todoLists.forEach(item => {
-        if (item.isCheck == true) {    //如果点击了，就保持不变
-          return;
-        }
-        item.isCheck = !item.isCheck;  //若没有点击，则更改取反
-        this.storageTest();
-      })
+      this.todoLists = [];
+      // this.todoLists.forEach(item => {
+      //   if (item.status == true) {    //如果点击了，就保持不变
+      //     return;
+      //   }
+      //   item.status = !item.status;  //若没有点击，则更改取反
+      //   this.storageTest();
+      // })
+      // 假设你有一个包含授权令牌的变量，名为'token'
+      const token = sessionStorage.getItem('token');
+      // 在请求头中添加token，发送GET请求
+      try {
+        // 从sessionStorage中获取token
+        // const token = sessionStorage.getItem('token');
+        console.log('abc');
+        const res = service.get("/status", {
+          params: { number: 1 },
+        })
+          .then(res => {
+            console.log("response:" + JSON.stringify(res.data));
+            console.log('do:', res);
+            this.todoLists = res.data;
+
+            // if (res.data.length > 0) {
+
+            //   //this.todoLists[this.clickedIndex].status = res.data[0].status; // 假设status是响应中第一个元素的属性
+            //   // for (let i = 0; i <= response.length; i++) {
+            //   //   this.todoLists.push(response.data[i])
+            //   //   console.log(3143);
+            //   // }
+            //   // console.log('todo:', this.todoLists);
+            //   console.log('do:', res.data);
+            //   console.log('测试:', res.data[0].status);
+            // }
+          }).catch(error => {
+            console.error("error:" + error);
+          })
+        // this.handleAdd();
+        // this.leaveTest();
+
+        // this.getPageList()
+      } catch (error) {
+        console.log(error);
+      }
+
+
     },
 
     //判断是否输入完成
@@ -495,7 +566,7 @@ export default {
       console.log("输入完成");
       this.storageTest();
       //put请求
-      const taskId = this.todoLists[index].id; // 更新的任务的实际ID
+      const taskId = id; // 更新的任务的实际ID
       //  // 从sessionStorage中获取token
       const token = sessionStorage.getItem('token');
       // const id = this.todoLists[index].id;
@@ -538,6 +609,8 @@ export default {
 </script>
   
 <style lang="scss">
+//@media screen and (max-width: 768px) 
+
 //按钮的共同样式
 button {
   padding: 5px 10px; //设置宽度以及高度
@@ -641,7 +714,7 @@ button {
       }
 
       .line-through {
-        color: rgba(255, 255, 255, 0.33); //文字颜色
+        color: rgba(10, 10, 10, 0.8); //文字颜色
         text-decoration: line-through rgba(255, 255, 255, 0.5); //横线颜色
       }
 
@@ -673,6 +746,7 @@ button {
 //分页查询
 .pageContainer {
   text-align: right;
+
 }
 </style>
   
