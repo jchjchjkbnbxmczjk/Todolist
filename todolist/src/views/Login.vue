@@ -139,14 +139,14 @@ export default {
 
       console.log(12112);
 
-      axios.post('http://114.132.67.226:3080/user/login', {
+      const res = service.post('/user/login', {
         account: this.username,
         password: this.password,
 
       })
         .then(function (response) {
           console.log(response.data.token);
-          sessionStorage.setItem('token', response.data.token)
+          sessionStorage.setItem('token', response.token)
         })
         .catch(function (error) {
           console.log("error:" + error);
