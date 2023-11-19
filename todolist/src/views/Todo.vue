@@ -13,6 +13,7 @@
         </div>
         <!-- //搜索框 -->
         <el-input class="searchInput" placeholder="请输入搜索内容" v-model="content" clearable>
+
           <!-- //这是Vue.js的模板标签，#append是模板的ID -->
           <template #append>
             <el-button @click="getToDoList" icon="el-icon-search"></el-button>
@@ -23,10 +24,14 @@
             </li>
           </ul>
         </el-input>
-
+        <!-- <div>
+          <button class="headerAll" @click="Finish">已完成</button>
+          <button class="headerAdd" @click="unFinish">未完成</button>
+        </div> -->
         <div class="header-right">
           <button class="headerAll" @click="selectAll">全选</button>
           <button class="headerAdd" @click="handleAdd">添加</button>
+          <!-- <button class="headerAll" @click="Finish">已完成</button> -->
         </div>
       </div>
 
@@ -47,7 +52,7 @@
               <!-- input输入框 -->
               <input class="content-input" v-model="item.content" icon="thing" placeholder="请输入任务"
                 onIconClick={this.handleIconClick.bind(this)} :disabled="item.isCheck"
-                :class="item.isCheck ? 'line-through' : ''" @blur="leaveTest">
+                :class="item.isCheck ? 'line-through' : ''" @blur="leaveTest(index, id)">
 
 
               <!-- 添加以下行，显示 updataTime -->
@@ -61,6 +66,8 @@
             </div>
           </draggable>
         </div>
+
+
 
         <!-- //分页查询 -->
         <div class="pageContainer">
@@ -91,9 +98,11 @@ import dayjs from "dayjs"
 import axios from "axios"
 import service from "../utils/request"
 import draggable from 'vuedraggable'
+import { mapState } from 'vuex';
 export default {
   components: {
     draggable,
+    ...mapState(['todoLists']),
   },
   name: 'App',
   data() {
@@ -147,6 +156,8 @@ export default {
         }).catch(error => {
           console.error("error:" + error);
         })
+      // this.handleAdd();
+      // this.leaveTest();
     } catch (error) {
       console.log(error);
     }
@@ -174,11 +185,50 @@ export default {
 
   },
   methods: {
+
+    async fetchData() {
+      await this.$store.dispatch('getTodoLists');
+    },
+
+    // async Finish(index) {
+    //   // 假设你有一个包含授权令牌的变量，名为'token'
+    //   const token = sessionStorage.getItem('token');
+    //   console.log(66);
+    //   // console.log('getToDoList')
+    //   // 在请求头中添加token，发送GET请求
+    //   try {
+    //     // // 从sessionStorage中获取token
+    //     // const token = sessionStorage.getItem('token');
+    //     const res = await service.get(`/status/${this.todoLists[index].id}`,);
+    //     console.log(89);
+    //     console.log('res:', res.data);
+    //     if (res.data.length > 0) {
+    //       this.todoLists = res.data;
+    //       // for (let i = 0; i < res.data.length; i++) {
+    //       //   this.todoLists.push(res.data[i])
+    //       // }
+    //       console.log('do:', res); // 访问第一个对象的 id 属性
+    //       // window.alert('do:' + res.data); // 弹出 id
+    //     } else {
+    //       this.todoLists = [];
+    //       console.log('未收到有效数据。');
+    //     }
+    //     // }
+    //     // ).catch(error => {
+    //     //   console.error("error:" + error);
+    //     // })
+    //   }
+    //   catch (error) {
+    //     console.log(error);
+    //   }
+
+    // },
+
+
     onDragEnd(event, index) {
       // 拖放结束后的处理逻辑
       this.storageTest(); // 更新本地存储
       console.log("onDragEnd - event:", event);
-
       // this.todoLists({
       //   id: this.randomID(),  //需要id作为唯一标识
       // })
@@ -203,7 +253,6 @@ export default {
             //   'Content-Type': 'application/json', // 根据你的需求设置 Content-Type
             // },
           });
-
         } catch (error) {
           console.log(error);
           // console.log(error.response.data)
@@ -342,7 +391,7 @@ export default {
     // },
 
     //实现添加功能
-    handleAdd() {
+    handleAdd(index, id) {
       //记录;并且点击添加之后向下运行
       this.todoLists.unshift({
         id: this.randomID(),  //需要id作为唯一标识
@@ -361,18 +410,30 @@ export default {
         content: this.content,
 
       })
-        .then(response => {
-          console.log(response);
+        .then(res => {
+          console.log(res);
+          console.log("res:", res.data.id);
+          //   console.log("response:" + JSON.stringify(res.data));
+          // if (res.data.length > 0) {
+          // this.todoLists.id = res.data.id;
+          //   // for (let i = 0; i < res.data.length; i++) {
+          //   //   this.todoLists.push(res.data[i])
+          //   // }
+          //   console.log('do:', res); // 访问第一个对象的 id 属性
+          //   // window.alert('do:' + res.data); // 弹出 id
+          // } else {
+          //   this.todoLists = [];
+          //   console.log('未收到有效数据。');
+          // }
         })
         .catch(error => {
           console.error(error);
         });
-
-
-
+      // this.mounted();
     },
     //实现删除功能
     deleOne(index, id) {
+      console.log(index, id);
       if (this.todoLists[index].id == id)
         this.todoLists.splice(index, 1)  //删除一条
       this.storageTest();
@@ -407,9 +468,7 @@ export default {
       //put请求
       //  // 从sessionStorage中获取token
       const token = sessionStorage.getItem('token');
-      const res = service.put(`/status` + this.todoLists[index].id, {
-
-      })
+      const res = service.put(`/status?id=${this.todoLists[index].id}`,)
         .then(response => {
           // Handle the successful response
           console.log(response);
@@ -432,33 +491,34 @@ export default {
     },
 
     //判断是否输入完成
-    leaveTest() {
+    leaveTest(index, id) {
       console.log("输入完成");
       this.storageTest();
       //put请求
+      const taskId = this.todoLists[index].id; // 更新的任务的实际ID
       //  // 从sessionStorage中获取token
       const token = sessionStorage.getItem('token');
       // const id = this.todoLists[index].id;
-      const taskId = this.todoLists[index].id; // 替换为您要更新的任务的实际ID
+      const updatedData = {
+        // 更新的任务数据
+        id: taskId,
+        content: this.todoLists[index].content
+        // 其他需要更新的字段
+      };
+      console.log("content:", this.todoLists[index].content);
       try {
-        const updatedData = {
-          // 更新的任务数据
-          content: this.content,
-          // 其他需要更新的字段
-        };
-        const response = service.put(`/task${taskId}`, updatedData);
+        const response = service.put(`/task`, updatedData
+        );
         // .then(response => {
         // Handle the successful response
         console.log(response.data);
+
       }
       // })
       // .catch(error => {
       catch (error) {
         console.error(error);
       }
-
-
-      // updateTask(taskId, updatedData);
 
 
     },
