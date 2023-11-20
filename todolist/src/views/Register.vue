@@ -4,7 +4,7 @@
       <h1>Register</h1>
       <el-form :model="ruleForm" :rules="rules" ref="ruleFormRef">
 
-        <el-form-item class="form">
+        <el-form-item class="form" prop="username">
           <label>用户名：</label>
           <el-input class="input-box" v-model="ruleForm.username" placeholder="请输入用户名"></el-input>
         </el-form-item>
@@ -24,7 +24,7 @@
             <label for="phone">手机号:</label>
             <el-input type="text" v-model="ruleForm.phone" id="phone" class="input-box" placeholder="请输入手机号"></el-input>
 
-            <button :disabled="isSend" @click.prevent="sendMsg" @click="zhenshiRequest">{{ isSend ? count :
+            <button :disabled="isSend" @click.prevent="sendMsg">{{ isSend ? count :
               "发送验证码" }}
             </button>
             <!-- <button-One @click="zhenshiRequest">
@@ -106,6 +106,9 @@ export default {
         ],
         phone: [
           { required: true, validator: validatePhone, trigger: "blur" }
+        ],
+        username: [
+          { required: true, trigger: "blur", message: "请输入用户名" }
         ]
       },
     }
@@ -113,7 +116,7 @@ export default {
     //验证码
     zhenshiRequest() {
       console.log("huh");
-      axios.get(`http://114.132.67.226:3080/user/smscode?tele=${this.ruleForm.phone}`)
+      const res = service.get(`/user/smscode?tele=${this.ruleForm.phone}`)
         .then(function (response) {
           console.log(response);
         })
@@ -130,33 +133,6 @@ export default {
 
     async sendMsg() {
 
-      // 点击按钮模拟请求验证码 写了个定时器 两秒之后返回发送验证码成功
-      // 假设一个真实的请求
-      // function zhenshiRequest() {
-      //   // axios.post('https://114.132.67.226:3080/user/smscode', {
-      //   //   phone: this.ruleForm.phone,
-      //   // })
-      //   //   .then(function (response) {
-      //   //     console.log(response);
-      //   //   })
-      //   //   .catch(function (error) {
-      //   //     console.log(error);
-      //   //   });
-      //   console.log("fasong");
-
-      //   console.log("phone:" + this.ruleForm.phone);
-      // }
-
-
-
-      //模拟发送请求
-      // const moniRequest = () => {
-      //   return new Promise((resolve, reject) => {
-      //     setTimeout(() => {
-      //       resolve("发送验证码成功")
-      //     }, 2000)
-      //   })
-      // }
       if (!this.ruleForm.phone || this.ruleForm.phone.length !== 11) {
         alert("请输入真实的手机号码")
         return
@@ -182,51 +158,54 @@ export default {
         .catch(error => {
           console.error('发送验证码失败', error);
         });
-
-
-
     },
-
-
 
     //点击完成按钮触发 submitRegister
     submitRegister: function () {
-      if (localStorage['name'] === this.ruleForm.username) {
-        alert("用户名已存在");//如果用户名已存在则无法注册
-        return;
-      }
+      this.$refs['ruleFormRef'].validate((valid) => {
+        console.log(valid);
+        if (valid) {
+          if (localStorage['name'] === this.ruleForm.username) {
+            alert("用户名已存在");//如果用户名已存在则无法注册
+            return;
+          }
 
-      if (!this.ruleForm.username) {
-        alert("用户名不能为空");
-        return;
-      } else {
+          if (!this.ruleForm.username) {
+            alert("用户名不能为空");
+            return;
+          } else {
 
 
-        // console.log(this.ruleForm);
+            console.log(this.ruleForm);
 
-        localStorage.setItem('name', this.ruleForm.username);
-        localStorage.setItem('password', this.ruleForm.pass);
-        localStorage.setItem('password', this.ruleForm.checkPass);
-        localStorage.setItem('tel', this.ruleForm.phone);
-        localStorage.setItem('s', "false");
-        alert("注册成功");
-        this.$router.replace('/login');//完成注册后跳转至登录页面
-      }
+            localStorage.setItem('name', this.ruleForm.username);
+            localStorage.setItem('password', this.ruleForm.pass);
+            localStorage.setItem('password', this.ruleForm.checkPass);
+            localStorage.setItem('tel', this.ruleForm.phone);
+            localStorage.setItem('s', "false");
+            this.$router.replace('/login');
+            //完成注册后跳转至登录页面
+          }
 
-      axios.post('http://114.132.67.226:3080/user/signup', {
-        account: this.ruleForm.username,
-        password: this.ruleForm.pass,
-        againpassword: this.ruleForm.checkPass,
-        phone: this.ruleForm.phone,
-        sms: this.yanzhengma
+          const res = service.post('/user/signup', {
+            account: this.ruleForm.username,
+            password: this.ruleForm.pass,
+            againpassword: this.ruleForm.checkPass,
+            phone: this.ruleForm.phone,
+            sms: this.yanzhengma
 
+          })
+            .then(function (response) {
+              alert("注册成功");
+              this.$router.replace('/login');
+              console.log(response);
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        }
       })
-        .then(function (response) {
-          console.log(response);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+
 
     }
   }
