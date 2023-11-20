@@ -51,12 +51,14 @@
 
 <script>
 import axios from 'axios';
+import service from "../utils/request"
 export default {
   props: {
     msg: String
 
   },
   data() {
+    //表单验证
     let validatePass = (rule, value, callback) => {
       // let reg = new RegExp(/[A-Za-z].*[0-9]|[0-9].*[A-Za-z]/);
       if (value === "") {
@@ -113,7 +115,7 @@ export default {
       },
     }
   }, methods: {
-
+    //验证码
     zhenshiRequest() {
       console.log("huh");
       axios.get(`http://114.132.67.226:3080/user/smscode?tele=${this.ruleForm.phone}`)

@@ -24,10 +24,6 @@
             </li>
           </ul>
         </el-input>
-        <!-- <div>
-          <button class="headerAll" @click="Finish">已完成</button>
-          <button class="headerAdd" @click="unFinish">未完成</button>
-        </div> -->
         <div class="header-right">
           <button class="headerAll" @click="selectAll">已完成</button>
           <button class="headerAdd" @click="handleAdd">添加</button>
@@ -81,11 +77,6 @@
     </div>
     <a-layout-footer>
       <el-button @click="loadingChange" type="primary" pain> 使用说明</el-button>
-      <!-- <Button type="text" @click="loadingChange">点击打开 Message Box</Button> -->
-      <!-- <li >
-      <router-link to="/HomeView">使用说明</router-link>
-   </li> -->
-      <!-- <router-view></router-view> -->
     </a-layout-footer>
 
   </div>
@@ -147,11 +138,10 @@ export default {
 
     // this.getToDoList();
     console.log('组件已挂载');
-    // 假设你有一个包含授权令牌的变量，名为'token'
+    // 从sessionStorage中获取token
     const token = sessionStorage.getItem('token');
     // 在请求头中添加token，发送GET请求
     try {
-      // 从sessionStorage中获取token
       // const token = sessionStorage.getItem('token');
       const res = service.get("/task")
         .then(res => {
@@ -206,41 +196,6 @@ export default {
     async fetchData() {
       await this.$store.dispatch('getTodoLists');
     },
-
-    // async Finish(index) {
-    //   // 假设你有一个包含授权令牌的变量，名为'token'
-    //   const token = sessionStorage.getItem('token');
-    //   console.log(66);
-    //   // console.log('getToDoList')
-    //   // 在请求头中添加token，发送GET请求
-    //   try {
-    //     // // 从sessionStorage中获取token
-    //     // const token = sessionStorage.getItem('token');
-    //     const res = await service.get(`/status/${this.todoLists[index].id}`,);
-    //     console.log(89);
-    //     console.log('res:', res.data);
-    //     if (res.data.length > 0) {
-    //       this.todoLists = res.data;
-    //       // for (let i = 0; i < res.data.length; i++) {
-    //       //   this.todoLists.push(res.data[i])
-    //       // }
-    //       console.log('do:', res); // 访问第一个对象的 id 属性
-    //       // window.alert('do:' + res.data); // 弹出 id
-    //     } else {
-    //       this.todoLists = [];
-    //       console.log('未收到有效数据。');
-    //     }
-    //     // }
-    //     // ).catch(error => {
-    //     //   console.error("error:" + error);
-    //     // })
-    //   }
-    //   catch (error) {
-    //     console.log(error);
-    //   }
-
-    // },
-
 
     onDragEnd(event, index) {
       // 拖放结束后的处理逻辑
@@ -302,7 +257,7 @@ export default {
     async getToDoList() {
       // 假设你有一个包含授权令牌的变量，名为'token'
       const token = sessionStorage.getItem('token');
-      // console.log('getToDoList')
+
       // 在请求头中添加token，发送GET请求
       try {
         // // 从sessionStorage中获取token
@@ -310,25 +265,17 @@ export default {
         const res = await service.get("/task/content", {
           params: { content: this.content },
         });
-        // this.todoLists = res.data;
-        // window.alert(res);
-        // .then(response => {
         console.log('res:', res.data);
         if (res.data.length > 0) {
           this.todoLists = res.data;
-          // for (let i = 0; i < res.data.length; i++) {
-          //   this.todoLists.push(res.data[i])
-          // }
+
           console.log('do:', res); // 访问第一个对象的 id 属性
           // window.alert('do:' + res.data); // 弹出 id
         } else {
           this.todoLists = [];
           console.log('未收到有效数据。');
         }
-        // }
-        // ).catch(error => {
-        //   console.error("error:" + error);
-        // })
+
       }
       catch (error) {
         console.log(error);
@@ -368,10 +315,6 @@ export default {
           params: {
             ...this.query
           },
-          // headers: {
-          //  // 从sessionStorage中获取token
-          //   'Content-Type': 'application/json', // 根据你的需求设置 Content-Type
-          // },
         });
         this.todoLists = res.data.tasks;
         this.total = res.data.total
@@ -392,9 +335,6 @@ export default {
       console.log(`每页${val}条`);
       // this.query.pages = val;
       this.$set(this.query, 'pages', val)
-      // let  arr=[[{index:1,name:'dxy'}]]
-      // this.$set(arr,0,{...arr[0],name:'uuuu'})
-
     },
     //当前页数
     handleCurrentChange(val) {
@@ -438,18 +378,7 @@ export default {
             status: false,
             time: dayjs(new Date).format("YYYY-MM-DD HH:mm")  //时间
           })
-          //   console.log("response:" + JSON.stringify(res.data));
-          // if (res.data.length > 0) {
-          // this.todoLists.id = res.data.id;
-          //   // for (let i = 0; i < res.data.length; i++) {
-          //   //   this.todoLists.push(res.data[i])
-          //   // }
-          //   console.log('do:', res); // 访问第一个对象的 id 属性
-          //   // window.alert('do:' + res.data); // 弹出 id
-          // } else {
-          //   this.todoLists = [];
-          //   console.log('未收到有效数据。');
-          // }
+
         })
         .catch(error => {
           console.error(error);
@@ -469,10 +398,6 @@ export default {
       try {
         const response = service.delete(`/task/${this.todoLists[index].id}`
 
-          // headers: {
-          //   token: `${token}`,
-          //   'Content-Type': 'application/json', // 根据你的需求设置 Content-Type
-          // },
         );
 
         // 处理响应
@@ -486,11 +411,6 @@ export default {
     selectTest(index, id) {
       console.log(index);
       console.log(id);
-
-      // if (this.todoLists[index].id === id) {  //判断index的id是否等于当前的id
-      //   this.todoLists[index].status = !this.todoLists[index].status //点击一次为真（true）再点一次为假（false）
-      //   this.storageTest();
-      // }
       //put请求
       //  // 从sessionStorage中获取token
       const token = sessionStorage.getItem('token');
@@ -502,7 +422,6 @@ export default {
           // }
           this.todoLists[index].status = true
           // this.$set(this.todoLists[index], 'status', true)
-          // Handle the successful response
           console.log(response);
         })
         .catch(error => {
@@ -535,18 +454,6 @@ export default {
             console.log("response:" + JSON.stringify(res.data));
             console.log('do:', res);
             this.todoLists = res.data;
-
-            // if (res.data.length > 0) {
-
-            //   //this.todoLists[this.clickedIndex].status = res.data[0].status; // 假设status是响应中第一个元素的属性
-            //   // for (let i = 0; i <= response.length; i++) {
-            //   //   this.todoLists.push(response.data[i])
-            //   //   console.log(3143);
-            //   // }
-            //   // console.log('todo:', this.todoLists);
-            //   console.log('do:', res.data);
-            //   console.log('测试:', res.data[0].status);
-            // }
           }).catch(error => {
             console.error("error:" + error);
           })
