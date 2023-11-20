@@ -1,16 +1,3 @@
-<!-- <template>
-<div>
-这是一个登录页面
-</div>
-</template>
-<script>
-
-</script>
-<style>
-
-</style> -->
-
-
 <template>
   <div id="background">
     <div class="container">
@@ -64,7 +51,6 @@ export default {
       if (this.name === localStorage['username'] && this.password === localStorage['password']) {
         // 登录成功就存token
         //用sessionStorage本地存储方法
-        // sessionStorage.setItem('token', "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiJxcXEiLCJhY2NvdW50IjoicXFxIiwiZXhwIjoxNzAwMDQ0NTIxfQ.SFzC-yuHl2XcS5arwRSSkeJFweDhX4R-65ilWyHe2EU")
         // sessionStorage.setItem('token', "123");
         //在点击登录时，添加loading加载组件，保证一秒后跳转到todolist界面
         const loading = this.$loading({
@@ -82,8 +68,6 @@ export default {
           this.$router.push({ name: 'Todo' })//如果输入的名字以及密码正确路由跳转至个人页面
         }, 1000);  //登录正确后，过一秒跳转到todolist界面
 
-
-        // this.$router.push({path:'/todo'});//如果输入的名字以及密码正确路由跳转至个人页面
       }
       else if (this.username === '')//名字为空
       {
@@ -117,28 +101,7 @@ export default {
 
 
     requestTest(formName) {
-      // this.$refs[formName].validate(valid => {
-      // if (valid) {
-      //   service.post('http://10.23.98.35:3080/user/login', {
-      //     acount: this.username,
-      //     password: this.password,
-
-      //   })
-      //     .then(function (response) {
-      //       console.log(response);
-      //     })
-      //     .catch(function (error) {
-      //       console.log(error);
-      //     });
-
-      //   console.log("password: " + this.password);
-      // } else {
-      //   console.log('error submit!!');
-      //   return false;
-      // }
-
       console.log(12112);
-
       const res = service.post('/user/login', {
         account: this.username,
         password: this.password,
@@ -154,26 +117,6 @@ export default {
 
       console.log(21378);
 
-
-      // });
-
-      //       service.post('http://10.23.98.35:3080/user/login', {
-      //         account: this.username,
-      //         password: this.password
-
-      //       })
-      //         .then(function (response) {
-      //           console.log(response);
-      //         })
-      //         .catch(function (error) {
-      //           console.log(error);
-      //         });
-
-      //       // console.log("formName:" + JSON.stringify(formName));
-
-      //       console.log("acount:" + this.username);
-
-      //       console.log("password: " + this.password);
     }
 
 

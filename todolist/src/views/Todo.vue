@@ -1,6 +1,5 @@
 <template>
   <div id="App">
-
     <img width="width" :height="height">
     <div class="todolistBox">
       <!-- //页面头部 -->
@@ -149,10 +148,6 @@ export default {
           console.log('do:', res);
           if (res.data.length > 0) {
             this.todoLists = res.data;
-            // for (let i = 0; i <= response.length; i++) {
-            //   this.todoLists.push(response.data[i])
-            //   console.log(3143);
-            // }
             console.log('todo:', this.todoLists);
             console.log('do:', res.data);
           }
@@ -163,7 +158,7 @@ export default {
       // this.leaveTest();
 
 
-      this.getPageList()
+      // this.getPageList()
     } catch (error) {
       console.log(error);
     }
@@ -255,13 +250,11 @@ export default {
     },
 
     async getToDoList() {
-      // 假设你有一个包含授权令牌的变量，名为'token'
+      // // 从sessionStorage中获取token
       const token = sessionStorage.getItem('token');
 
       // 在请求头中添加token，发送GET请求
       try {
-        // // 从sessionStorage中获取token
-        // const token = sessionStorage.getItem('token');
         const res = await service.get("/task/content", {
           params: { content: this.content },
         });
@@ -270,7 +263,6 @@ export default {
           this.todoLists = res.data;
 
           console.log('do:', res); // 访问第一个对象的 id 属性
-          // window.alert('do:' + res.data); // 弹出 id
         } else {
           this.todoLists = [];
           console.log('未收到有效数据。');
@@ -301,8 +293,6 @@ export default {
 
       //   ];
       // }
-
-
     },
     //异步函数声明
     async getPageList() {
@@ -344,14 +334,6 @@ export default {
       this.$set(this.query, 'index', val)
 
     },
-
-
-    //  addTodo: function (text) {
-    //   this.todos.push({
-    //     text: text,
-    //     done: false
-    //   })
-    // },
 
     //实现添加功能
     handleAdd(index, id) {
@@ -431,6 +413,7 @@ export default {
     },
 
     //实现全选功能(已完成)
+    //根据已完成进行任务分类
     selectAll() {
       this.todoLists = [];
       // this.todoLists.forEach(item => {
@@ -440,12 +423,10 @@ export default {
       //   item.status = !item.status;  //若没有点击，则更改取反
       //   this.storageTest();
       // })
-      // 假设你有一个包含授权令牌的变量，名为'token'
+      // 从sessionStorage中获取token
       const token = sessionStorage.getItem('token');
       // 在请求头中添加token，发送GET请求
       try {
-        // 从sessionStorage中获取token
-        // const token = sessionStorage.getItem('token');
         console.log('abc');
         const res = service.get("/status", {
           params: { number: 1 },

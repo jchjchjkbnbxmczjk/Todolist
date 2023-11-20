@@ -38,11 +38,6 @@
           </div>
         </el-form-item>
 
-        <!-- <el-form-item class="form">
-          <label>手机号：</label>
-          <el-input class="input-box" v-model="ruleForm.tel" placeholder="请输入手机号"></el-input>
-        </el-form-item> -->
-
       </el-form>
       <button @click="submitRegister" @keydown.enter="submitRegister">提交</button>
     </div>
