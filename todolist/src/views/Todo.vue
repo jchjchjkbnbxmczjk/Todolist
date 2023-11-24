@@ -48,7 +48,7 @@
               <input class="content-input" v-model="item.content" icon="thing" placeholder="请输入任务"
                 onIconClick={this.handleIconClick.bind(this)} :disabled="item.status == 1"
                 :class="item.status ? 'line-through' : ''" @blur="leaveTest(index, item.id)">
-              <span>{{ item.id }}</span>
+              <!-- <span>{{ item.id }}</span> -->
 
 
               <!-- 添加以下行，显示 updataTime -->
@@ -295,6 +295,7 @@ export default {
       // }
     },
     //异步函数声明
+    //实现分页功能
     async getPageList() {
       //  // 从sessionStorage中获取token
 
