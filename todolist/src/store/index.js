@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
+import service from "../utils/request"
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -12,12 +12,13 @@ export default new Vuex.Store({
   },
   getters: {
   },
+  //mutation 来更新todoLists 状态
   mutations: {
     // 定义 mutations 用于修改状态
-    SET_TODO_LISTS(state, todoLists) {
+    setTodoLists(state, todoLists) {
       state.todoLists = todoLists;
     },
-    // 其他 mutations
+
   },
   actions: {
     // 定义 actions 用于处理异步操作
@@ -27,7 +28,7 @@ export default new Vuex.Store({
       const todoLists = res.data;
 
       // 提交 mutation 来修改状态
-      commit('SET_TODO_LISTS', todoLists);
+      commit('setTodoLists', todoLists);
     },
     // 其他 actions
   },

@@ -13,7 +13,7 @@
         <!-- //搜索框 -->
         <el-input class="searchInput" placeholder="请输入搜索内容" v-model="content" clearable>
 
-          <!-- //这是Vue.js的模板标签，#append是模板的ID -->
+          <!-- //Vue.js模板标签，#append是模板的ID -->
           <template #append>
             <el-button @click="getToDoList" icon="el-icon-search"></el-button>
           </template>
@@ -62,9 +62,6 @@
             </div>
           </draggable>
         </div>
-
-
-
         <!-- //分页查询 -->
         <div class="pageContainer">
           <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -77,9 +74,7 @@
     <a-layout-footer>
       <el-button @click="loadingChange" type="primary" pain> 使用说明</el-button>
     </a-layout-footer>
-
   </div>
-  <!-- </ul> -->
 </template>
   
 <script >
@@ -134,7 +129,7 @@ export default {
   //   window.removeEventListener('resize', this.handleResize)
   // },
   mounted() {
-
+    this.fetchData(); // 在组件挂载时调用fetchData方法
     // this.getToDoList();
     console.log('组件已挂载');
     // 从sessionStorage中获取token
@@ -156,15 +151,11 @@ export default {
         })
       // this.handleAdd();
       // this.leaveTest();
-
-
       // this.getPageList()
     } catch (error) {
       console.log(error);
     }
   },
-
-
 
 
   //读取所存储的数据
@@ -298,7 +289,6 @@ export default {
     //实现分页功能
     async getPageList() {
       //  // 从sessionStorage中获取token
-
       const token = sessionStorage.getItem('token');
       //发送get请求
       try {
@@ -338,13 +328,11 @@ export default {
 
     //实现添加功能
     handleAdd(index, id) {
-
       //    //点击添加之后获取焦点
       //  const inputLength=this.todoLists.length -1
       //  this.$nextTick(() => {     //保证渲染完成之后获取焦点
       //   this.$refs.inputBox[this.inputLength].focus()
       //  })
-
       const token = sessionStorage.getItem('token');
       const res = service.post('/task', {
         content: this.content,
@@ -413,7 +401,7 @@ export default {
         })
     },
 
-    //实现全选功能(已完成)
+    //实现全选功能
     //根据已完成进行任务分类
     selectAll() {
       this.todoLists = [];
@@ -469,18 +457,12 @@ export default {
       try {
         const response = service.put(`/task`, updatedData
         );
-        // .then(response => {
-        // Handle the successful response
         console.log(response.data);
 
       }
-      // })
-      // .catch(error => {
       catch (error) {
         console.error(error);
       }
-
-
     },
 
     //实现本地存储

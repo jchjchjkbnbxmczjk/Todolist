@@ -20,8 +20,8 @@
             <p></p>
           </div>
         </div>
-
       </form>
+      <!-- 触发登录操作 -->
       <el-button type="submit" @click="requestTest" @click.prevent="openLoading" v-loading="loading" plain>登录</el-button>
       <!-- v-on点击按钮触发handlelogin方法 -->
       <el-button @click.prevent="handleregister">注册</el-button>
@@ -31,10 +31,8 @@
 </template>
 
 <script>
-// import service from '@/utils/request';
 import service from "../utils/request"
 import axios from 'axios'
-
 export default {
   data() {
     return {
@@ -42,11 +40,12 @@ export default {
       password: "",//密码
       st: "false",//false为不保存登录
       loading: false,
-      loadingChange: ''
+      // loadingChange: ''
     };
 
   },
   methods: {
+    //处理登录逻辑
     openLoading: function () {
       if (this.name === localStorage['username'] && this.password === localStorage['password']) {
         // 登录成功就存token
@@ -61,10 +60,6 @@ export default {
         });
         setTimeout(() => {
           loading.close();
-
-          // // 从sessionStorage中获取token
-          // const token = sessionStorage.getItem('token');
-
           this.$router.push({ name: 'Todo' })//如果输入的名字以及密码正确路由跳转至个人页面
         }, 1000);  //登录正确后，过一秒跳转到todolist界面
 
@@ -86,12 +81,14 @@ export default {
     //   this.openLoading()
     // },
 
+    //处理跳转到注册页面
     handleregister: function () {
 
       console.log('这是this.$router', this.$router);
       this.$router.push({ path: '/register' })//点击注册按钮，跳转至注册页面
     },
     //点击保持登录状态触发handlesave
+    //处理保持登录状态
     handlesave: function () {
       this.st = "true";//修改登录状态为true
       localStorage.setItem('s', this.st);
@@ -99,7 +96,7 @@ export default {
     },
 
 
-
+    //处理发起登录请求
     requestTest(formName) {
       console.log(12112);
       const res = service.post('/user/login', {

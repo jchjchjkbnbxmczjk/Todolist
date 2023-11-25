@@ -2,8 +2,8 @@
   <div id="background">
     <div id="contain">
       <h1>Register</h1>
+      <!-- //绑定了表单数据模型和验证规则，使用 ref 属性给表单命名为 "ruleFormRef" -->
       <el-form :model="ruleForm" :rules="rules" ref="ruleFormRef">
-
         <el-form-item class="form" prop="username">
           <label>用户名：</label>
           <el-input class="input-box" v-model="ruleForm.username" placeholder="请输入用户名"></el-input>
@@ -23,10 +23,9 @@
           <div>
             <label for="phone">手机号:</label>
             <el-input type="text" v-model="ruleForm.phone" id="phone" class="input-box" placeholder="请输入手机号"></el-input>
-
-            <button :disabled="isSend" @click.prevent="sendMsg">{{ isSend ? count :
+            <el-button size="medium" round type="text" :disabled="isSend" @click.prevent="sendMsg">{{ isSend ? count :
               "发送验证码" }}
-            </button>
+            </el-button>
             <!-- <button-One @click="zhenshiRequest">
             </button-One> -->
           </div>
@@ -50,7 +49,6 @@ import service from "../utils/request"
 export default {
   props: {
     msg: String
-
   },
   data() {
     //表单验证
@@ -60,6 +58,7 @@ export default {
         callback(new Error("请输入密码"));
       } else {
         if (this.againpassword !== "") {
+          //通过引用获取表单对象
           this.$refs.ruleFormRef.validateField("checkPass");
         }
         callback();
@@ -86,6 +85,7 @@ export default {
 
 
     return {
+      //定义表单数据模型 ruleForm
       ruleForm: {
         pass: "",
         checkPass: "",
@@ -130,9 +130,8 @@ export default {
     },
 
 
-
+    //发送验证码
     async sendMsg() {
-
       if (!this.ruleForm.phone || this.ruleForm.phone.length !== 11) {
         alert("请输入真实的手机号码")
         return
@@ -140,7 +139,7 @@ export default {
       await this.zhenshiRequest();
       // const res = await zhenshiRequest()
       // console.log(res);
-      //设计倒计时
+      //设计倒计时功能
       this.isSend = true
       this.timeVal = setInterval(() => {
         if (this.count === 0) {
@@ -150,8 +149,6 @@ export default {
         }
         this.count--
       }, 1000)
-
-        // const res = 
         .then(response => {
           console.log('发送验证码成功', response.data);
         })
@@ -220,7 +217,6 @@ export default {
 #background {
   width: 110%;
   height: 100%;
-
   background-size: 100% 100%;
   position: fixed;
   top: 0;
@@ -232,7 +228,7 @@ export default {
   height: 600px;
   position: absolute;
   top: 50%;
-  left: 50%;
+  left: 44%;
   transform: translate(-50%, -50%);
   background: #00000090;
   text-align: center;
@@ -269,8 +265,6 @@ button {
   color: white;
   margin-left: 40px;
 }
-
-
 
 .input-box {
   width: 300px;
